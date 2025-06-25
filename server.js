@@ -15,7 +15,22 @@ const app = express();
 dotenv.config();
 connectDB();
 
-app.use(cors()); // ← enable cors
+const allowedOrigins = [
+  'http://localhost:5173', // for local dev
+  'https://ai-ecommerce-4a2c6.web.app', // replace with your Firebase hosting URL (if deployed)
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('CORS policy blocked this origin.'), false);
+    }
+  },
+  credentials: true,
+}));
+
 app.use(express.json());    
 
 app.use('/api/auth', authRoutes);
